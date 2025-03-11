@@ -13,15 +13,14 @@ interface ProductType {
   images: string[];
 }
 
-export default function page() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+export default function Page() {
+  const [products, setProducts] = useState<ProductType[]>([]);
 
   useEffect(() => {
     const ticketData = localStorage.getItem("likes");
-    setProducts(JSON.parse(ticketData!));
-
-    console.log(ticketData);
+    if (ticketData) {
+      setProducts(JSON.parse(ticketData));
+    }
   }, []);
 
   const addToCart = (product: ProductType) => {
@@ -65,7 +64,7 @@ export default function page() {
     <div className="max-w-[1500px] mx-auto">
       <Navbar />
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
-        {loading
+        {products.length === 0
           ? [...Array(10)].map((_, index) => (
               <div key={index} className="border p-4 rounded shadow-sm">
                 <div className="w-full h-48 bg-gray-200 animate-pulse mb-4 rounded-lg"></div>
@@ -77,7 +76,7 @@ export default function page() {
                 </div>
               </div>
             ))
-          : products?.map((product) => (
+          : products.map((product) => (
               <div
                 key={product.id}
                 className="cursor-pointer border p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"

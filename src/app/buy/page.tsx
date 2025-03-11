@@ -59,6 +59,7 @@ export default function Buy() {
         .insert({
           userId,
           location: userOrder.address,
+          username: userOrder.firstName + " " + userOrder.lastName,
           phone: userOrder.phone,
           status: "open",
           totalPrice: total,
@@ -84,7 +85,7 @@ export default function Buy() {
 
       toast.success("Buyurtma muvaffaqiyatli joylandi!");
       localStorage.removeItem("order");
-      location.href = "/";
+      setTimeout(() => (location.href = "/"), 1500);
     } catch (error: any) {
       toast.error(`Xatolik: ${error.message}`);
       console.error(error);
@@ -173,8 +174,6 @@ export default function Buy() {
               </h2>
               <p className="text-green-500 font-bold">{product.price} so‘m</p>
               <p className="text-gray-500 font-bold">{product.count}</p>
-
-              
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Rodal from "rodal";
 import { createClient } from "@/supabase/client";
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -24,11 +24,7 @@ function Categories() {
 
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchCategory();
-  }, []);
-
-  const fetchCategory = async () => {
+  const fetchCategory = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.from("Shop_Category").select("*");
     if (error) {
@@ -39,7 +35,11 @@ function Categories() {
       setCategories(data);
       setLoading(false);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchCategory();
+  }, [fetchCategory]);
 
   const handleAddCategory = async () => {
     if (categoryName.trim() === "") {

@@ -1,7 +1,7 @@
 "use client";
 import Saidbar from "@/app/_Components/Saidbar";
 import { createClient } from "@/supabase/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 interface CategoryType {
@@ -27,12 +27,7 @@ function Dashboard() {
 
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchCategory();
-    fetchProducts();
-  }, []);
-
-  const fetchCategory = async () => {
+  const fetchCategory = useCallback(async () => {
     const { data, error } = await supabase.from("Shop_Category").select("*");
     if (error) {
       toast.error("Ma'lumotlarni yuklashda xatolik!");
@@ -41,9 +36,9 @@ function Dashboard() {
     if (data) {
       setCategories(data);
     }
-  };
+  }, [supabase]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     const { data, error } = await supabase.from("Shop_Products").select("*");
     if (error) {
       toast.error("Mahsulotlarni yuklashda xatolik!");
@@ -51,7 +46,12 @@ function Dashboard() {
     } else {
       setProducts(data);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchCategory();
+    fetchProducts();
+  }, [fetchCategory, fetchProducts]);
 
   return (
     <div className="flex">

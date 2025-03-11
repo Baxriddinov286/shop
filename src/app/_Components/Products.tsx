@@ -1,9 +1,10 @@
 "use client";
 import { createClient } from "@/supabase/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RangeSlider from "react-range-slider-input";
+import Image from "next/image";
 
 interface ProductType {
   id: string;
@@ -23,19 +24,14 @@ interface CategoryType {
 
 function HomeProducts() {
   const [products, setProducts] = useState<ProductType[]>([]);
+  const [productsLeng, setProductsLeng] = useState<ProductType[]>([]);
   const [categories, setCategories] = useState<CategoryType[]>([]);
-  const [ProductsLeng, setProductsLeng] = useState<ProductType[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
-  useEffect(() => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
-    fetchProducts();
-    fetchCategory();
-  }, [selectedCategory]);
-
-  const fetchProducts = async () => {
     let query = supabase.from("Shop_Products").select("*");
 
     if (selectedCategory !== "") {
@@ -44,22 +40,17 @@ function HomeProducts() {
 
     const { data, error } = await query;
 
-    const { data: categoryLeng } = await supabase
-      .from("Shop_Products")
-      .select("*");
-
     if (error) {
       toast.error("Mahsulotlarni yuklashda xatolik!");
       console.error(error);
     } else {
       setProducts(data);
-      // @ts-ignore
-      setProductsLeng(categoryLeng);
+      setProductsLeng(data);
     }
     setLoading(false);
-  };
+  }, [selectedCategory, supabase]);
 
-  const fetchCategory = async () => {
+  const fetchCategory = useCallback(async () => {
     const { data, error } = await supabase.from("Shop_Category").select("*");
     if (error) {
       toast.error("Ma'lumotlarni yuklashda xatolik!");
@@ -68,18 +59,24 @@ function HomeProducts() {
     if (data) {
       setCategories(data);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategory();
+  }, [fetchProducts, fetchCategory]);
 
   const addToCart = (product: ProductType) => {
     const userId = localStorage.getItem("userId");
-
     if (!userId) {
       toast.error("Iltimos, ro‘yxatdan o‘ting!");
       return;
     }
 
     const existingCart = localStorage.getItem("cart");
-    let cartItems: ProductType[] = existingCart ? JSON.parse(existingCart) : [];
+    const cartItems: ProductType[] = existingCart
+      ? JSON.parse(existingCart)
+      : [];
 
     if (!cartItems.some((item) => item.id === product.id)) {
       cartItems.push(product);
@@ -92,7 +89,6 @@ function HomeProducts() {
 
   const toggleLike = (product: ProductType) => {
     const userId = localStorage.getItem("userId");
-
     if (!userId) {
       toast.error("Iltimos, ro‘yxatdan o‘ting!");
       return;
@@ -117,7 +113,6 @@ function HomeProducts() {
   return (
     <div className="w-[1500px] mx-auto flex flex-col lg:flex-row justify-start items-start pt-4">
       <ToastContainer />
-
       <div className="w-full lg:w-1/3 min-h-screen shadow-lg rounded-md p-4 mr-5">
         <h1 className="text-2xl font-bold mb-4">Categories</h1>
         <div
@@ -127,7 +122,7 @@ function HomeProducts() {
           }`}
         >
           <p>Barcha Mahsulotlar</p>
-          <p>({ProductsLeng.length})</p>
+          <p>({productsLeng.length})</p>
         </div>
         {categories.map((category) => (
           <div
@@ -141,7 +136,7 @@ function HomeProducts() {
             <p>
               (
               {
-                ProductsLeng.filter(
+                productsLeng.filter(
                   (product) => product.category_id === category.id
                 ).length
               }
@@ -151,7 +146,6 @@ function HomeProducts() {
         ))}
         <RangeSlider />
       </div>
-
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {loading
           ? [...Array(8)].map((_, index) => (
@@ -159,10 +153,6 @@ function HomeProducts() {
                 <div className="w-full h-48 bg-gray-200 animate-pulse mb-4 rounded-lg"></div>
                 <div className="w-4/5 h-5 bg-gray-200 animate-pulse mb-2 rounded"></div>
                 <div className="w-3/5 h-5 bg-gray-200 animate-pulse mb-4 rounded"></div>
-                <div className="flex justify-end items-center mt-4 gap-3">
-                  <div className="w-8 h-8 bg-gray-200 animate-pulse rounded-full"></div>
-                  <div className="w-8 h-8 bg-gray-200 animate-pulse rounded-full"></div>
-                </div>
               </div>
             ))
           : products.map((product) => (
@@ -170,12 +160,14 @@ function HomeProducts() {
                 key={product.id}
                 className="cursor-pointer border p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
-                <img
+                <Image
                   onClick={() =>
                     (location.href = `/productsInfo/${product.id}`)
                   }
                   src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${product.images[0]}`}
                   alt={product.name}
+                  width={300}
+                  height={200}
                   className="w-full h-48 object-cover rounded-lg mb-4"
                 />
                 <h2 className="text-lg font-semibold text-gray-800">
@@ -202,5 +194,4 @@ function HomeProducts() {
     </div>
   );
 }
-
 export default HomeProducts;

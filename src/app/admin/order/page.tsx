@@ -9,8 +9,8 @@ interface OrderType {
   id: string;
   userId: string;
   userName: string;
-  userLastName: string;
   status: string;
+  products: { product: string; quantity: number; price: number }[];
 }
 
 export default function Order() {
@@ -22,14 +22,13 @@ export default function Order() {
   }, []);
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase.from("Shop_Order_Product").select(`
-      product,
-      quantity,
-      orderId (*),
-    `);
+    const { data, error } = await supabase.from("Shop_Users").select("*");
+
 
     if (error) {
       toast.error("Xatolik yuz berdi");
+      console.log("xatolik"+error);
+      
     } else {
       console.log(data);
     }
@@ -40,20 +39,35 @@ export default function Order() {
       <Saidbar />
       <div className="w-full py-10 px-10">
         <ToastContainer />
-        <div className="flex justify-between items-center mb-10">
-          <h1 className="text-2xl font-bold">Order</h1>
-        </div>
-        <div className="h-[650px] flex items-start justify-between gap-2 border p-3 rounded-md">
-          <div className="w-full h-full overflow-y-scroll shadow-lg border p-2 rounded-lg">
-            <h1 className="text-2xl font-bold text-center">Open</h1>
-          </div>
-          <div className="w-full h-full overflow-y-scroll shadow-lg border p-2 rounded-lg">
-            <h1 className="text-2xl font-bold text-center">Pending</h1>
-          </div>
-          <div className="w-full h-full overflow-y-scroll shadow-lg border p-2 rounded-lg">
-            <h1 className="text-2xl font-bold text-center">Close</h1>
-            <div></div>
-          </div>
+        <h1 className="text-2xl font-bold mb-6">Orders</h1>
+        <div className="grid grid-cols-1 gap-4">
+          {orders.map((order) => (
+            <div key={order.id} className="border p-4 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold">
+                {order.userName} (Status: {order.status})
+              </h2>
+              <div className="mt-2 p-2 border rounded-md">
+                {order.products.map((prod, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between border-b py-2"
+                  >
+                    <span>
+                      {prod.product} x {prod.quantity}
+                    </span>
+                    <span>${prod.price * prod.quantity}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 text-right font-bold">
+                Total: $
+                {order.products.reduce(
+                  (sum, p) => sum + p.price * p.quantity,
+                  0
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
