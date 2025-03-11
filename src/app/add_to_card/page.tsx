@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../_Components/navbar";
 import { toast, ToastContainer } from "react-toastify";
 import { MdDeleteOutline } from "react-icons/md";
+import Image from "next/image";
 
 interface ProductType {
   id: string;
@@ -86,13 +87,15 @@ export default function Page() {
             <tr key={product.id}>
               <td>
                 {product.images && product.images.length > 0 ? (
-                  <img
+                  <Image
                     onClick={() =>
                       (location.href = `/productsInfo/${product.id}`)
                     }
                     src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${product.images[0]}`}
                     alt={product.name}
-                    className="w-10 h-10 rounded-lg"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-lg cursor-pointer"
                   />
                 ) : (
                   <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg">
@@ -106,7 +109,9 @@ export default function Page() {
                 </h2>
               </td>
               <td>
-                <p className="text-green-500 font-bold">{product.price} so‘m</p>
+                <p className="text-green-500 font-bold">
+                  {product.price.toLocaleString()} so‘m
+                </p>
               </td>
               <td>
                 <div className="flex items-center">

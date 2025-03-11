@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Navbar from "../_Components/navbar";
 import { toast } from "react-toastify";
 
@@ -25,7 +26,9 @@ export default function Page() {
 
   const addToCart = (product: ProductType) => {
     const existingCart = localStorage.getItem("cart");
-    let cartItems: ProductType[] = existingCart ? JSON.parse(existingCart) : [];
+    const cartItems: ProductType[] = existingCart
+      ? JSON.parse(existingCart)
+      : [];
 
     if (!cartItems.some((item) => item.id === product.id)) {
       cartItems.push(product);
@@ -82,13 +85,15 @@ export default function Page() {
                 className="cursor-pointer border p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 {product.images && product.images.length > 0 ? (
-                  <img
+                  <Image
                     onClick={() =>
                       (location.href = `/productsInfo/${product.id}`)
                     }
                     src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${product.images[0]}`}
                     alt={product.name}
-                    className="w-full h-72 rounded-lg mb-4"
+                    width={300} // Rasm o'lchamini belgilash kerak
+                    height={300}
+                    className="w-full h-72 rounded-lg mb-4 object-cover"
                   />
                 ) : (
                   <div className="w-full h-72 bg-gray-200 flex items-center justify-center text-gray-500 rounded-lg mb-4">

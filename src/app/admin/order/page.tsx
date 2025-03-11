@@ -1,7 +1,7 @@
 "use client";
 import Saidbar from "@/app/_Components/Saidbar";
 import { createClient } from "@/supabase/client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,22 +17,20 @@ export default function Order() {
   const supabase = createClient();
   const [orders, setOrders] = useState<OrderType[]>([]);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase.from("Shop_Users").select("*");
-
 
     if (error) {
       toast.error("Xatolik yuz berdi");
-      console.log("xatolik"+error);
-      
+      console.error("Xatolik:", error);
     } else {
-      console.log(data);
+      setOrders(data); // Mahsulotlarni yangilash
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   return (
     <div className="h-screen flex overflow-hidden">
