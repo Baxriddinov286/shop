@@ -145,7 +145,7 @@ export default function Page() {
       <div className="flex flex-col items-end mt-4">
         <div className="text-black text-xl font-bold mt-4 flex gap-3 justify-end">
           <p>Jami summa:</p>
-          <p>{total.toLocaleString()} so'm</p>
+          <p>{total.toLocaleString()} so&apos;m</p>
         </div>
         <button onClick={BuyNow} className="btn btn-success w-64">
           Buy
