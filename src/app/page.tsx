@@ -1,9 +1,7 @@
 "use client";
 import Home from "./_Components/home";
 
-const page = () => {
-
-
+const Page = () => {
   return (
     <div>
       <Home />
@@ -11,4 +9,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
