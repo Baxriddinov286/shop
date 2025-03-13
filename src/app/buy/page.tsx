@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../_Components/navbar";
 import { createClient } from "@/supabase/client";
 import { toast, ToastContainer } from "react-toastify";
+import Image from "next/image";
 import "react-toastify/dist/ReactToastify.css";
 
 interface ProductType {
@@ -86,9 +87,14 @@ export default function Buy() {
       toast.success("Buyurtma muvaffaqiyatli joylandi!");
       localStorage.removeItem("order");
       setTimeout(() => (location.href = "/"), 1500);
-    } catch (error: any) {
-      toast.error(`Xatolik: ${error.message}`);
-      console.error(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(`Xatolik: ${error.message}`);
+        console.error(error);
+      } else {
+        toast.error("Noma'lum xatolik yuz berdi!");
+        console.error(error);
+      }
     }
   };
 
@@ -164,9 +170,11 @@ export default function Buy() {
               key={product.id}
               className="cursor-pointer border p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
             >
-              <img
+              <Image
                 src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${product.images[0]}`}
                 alt={product.name}
+                width={200}
+                height={200}
                 className="w-full h-48 object-cover rounded-lg mb-4"
               />
               <h2 className="text-lg font-semibold text-gray-800">

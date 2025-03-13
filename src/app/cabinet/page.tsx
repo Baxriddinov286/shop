@@ -1,35 +1,46 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/supabase/client";
 import { toast } from "react-toastify";
 import Navbar from "../_Components/navbar";
 
+interface UserData {
+  id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  password?: string; 
+}
+
 export default function ProfilePage() {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const supabase = createClient();
+
+  const fetchUserData = useCallback(
+    async (userId: string) => {
+      const { data, error } = await supabase
+        .from("Shop_Users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        toast.error("Foydalanuvchi ma'lumotlarini yuklashda xatolik!");
+        console.error(error);
+      } else {
+        setUserData(data);
+      }
+    },
+    [supabase]
+  );
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       fetchUserData(userId);
     }
-  }, []);
-
-  const fetchUserData = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("Shop_Users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    if (error) {
-      toast.error("Foydalanuvchi ma'lumotlarini yuklashda xatolik!");
-      console.error(error);
-    } else {
-      setUserData(data);
-    }
-  };
+  }, [fetchUserData]);
 
   const handleUpdate = async () => {
     const userId = localStorage.getItem("userId");
@@ -37,7 +48,12 @@ export default function ProfilePage() {
 
     const { error } = await supabase
       .from("Shop_Users")
-      .update(userData)
+      .update({
+        name: userData.name,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: userData.password,
+      })
       .eq("id", userId);
 
     if (error) {
@@ -68,10 +84,11 @@ export default function ProfilePage() {
             <input
               type="text"
               value={userData.name || ""}
-              onChange={(e) => {
-                setUserData({ ...userData, name: e.target.value });
-                setIsEditing(true);
-              }}
+              onChange={(e) =>
+                setUserData((prev) =>
+                  prev ? { ...prev, name: e.target.value } : prev
+                )
+              }
               className="form-control"
               placeholder="Name.."
             />
@@ -81,10 +98,11 @@ export default function ProfilePage() {
             <input
               type="text"
               value={userData.lastName || ""}
-              onChange={(e) => {
-                setUserData({ ...userData, lastName: e.target.value });
-                setIsEditing(true);
-              }}
+              onChange={(e) =>
+                setUserData((prev) =>
+                  prev ? { ...prev, lastName: e.target.value } : prev
+                )
+              }
               className="form-control"
               placeholder="LastName.."
             />
@@ -94,10 +112,11 @@ export default function ProfilePage() {
             <input
               type="email"
               value={userData.email || ""}
-              onChange={(e) => {
-                setUserData({ ...userData, email: e.target.value });
-                setIsEditing(true);
-              }}
+              onChange={(e) =>
+                setUserData((prev) =>
+                  prev ? { ...prev, email: e.target.value } : prev
+                )
+              }
               className="form-control"
               placeholder="Email.."
             />
@@ -107,10 +126,11 @@ export default function ProfilePage() {
             <input
               type="text"
               value={userData.password || ""}
-              onChange={(e) => {
-                setUserData({ ...userData, password: e.target.value });
-                setIsEditing(true);
-              }}
+              onChange={(e) =>
+                setUserData((prev) =>
+                  prev ? { ...prev, password: e.target.value } : prev
+                )
+              }
               className="form-control"
               placeholder="Password.."
             />

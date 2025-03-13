@@ -2,11 +2,12 @@
 import Navbar from "@/app/_Components/navbar";
 import { createClient } from "@/supabase/client";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { FaHeart } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Image from "next/image";
 
 interface ProductType {
   id: number;
@@ -32,6 +33,17 @@ const Page = () => {
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchCategory = useCallback(async () => {
+    const { data, error } = await supabase.from("Shop_Category").select("*");
+    if (error) {
+      toast.error("Ma'lumotlarni yuklashda xatolik!");
+      console.error(error);
+    }
+    if (data) {
+      setCategories(data);
+    }
+  }, [supabase]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       const { data } = await supabase
@@ -47,18 +59,7 @@ const Page = () => {
 
     fetchProducts();
     fetchCategory();
-  }, [id]);
-
-  const fetchCategory = async () => {
-    const { data, error } = await supabase.from("Shop_Category").select("*");
-    if (error) {
-      toast.error("Ma'lumotlarni yuklashda xatolik!");
-      console.error(error);
-    }
-    if (data) {
-      setCategories(data);
-    }
-  };
+  }, [id, fetchCategory]);
 
   const category = categories.find((cat) => cat.id === product?.category_id);
 
@@ -71,7 +72,9 @@ const Page = () => {
     }
 
     const existingCart = localStorage.getItem("cart");
-    let cartItems: ProductType[] = existingCart ? JSON.parse(existingCart) : [];
+    const cartItems: ProductType[] = existingCart
+      ? JSON.parse(existingCart)
+      : [];
 
     if (!cartItems.some((item) => item.id === product.id)) {
       cartItems.push(product);
@@ -126,12 +129,14 @@ const Page = () => {
                     />
                   ))
               : product?.images?.map((img: string, index: number) => (
-                  <img
+                  <Image
                     onMouseEnter={() => setImgIndex(index)}
                     key={index}
                     src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${img}`}
                     alt={`${index}`}
-                    className={`w-20 h-20 object-cover rounded-lg cursor-pointer border border-gray-300 hover:border-gray-600 transition-opacity ${
+                    width={80}
+                    height={80}
+                    className={`rounded-lg cursor-pointer border border-gray-300 hover:border-gray-600 transition-opacity ${
                       imgIndex === index ? "opacity-100" : "opacity-50"
                     }`}
                   />
@@ -141,9 +146,11 @@ const Page = () => {
             {loading ? (
               <Skeleton width={500} height={384} className="rounded-lg" />
             ) : (
-              <img
+              <Image
                 src={`https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/${product?.images[imgIndex]}`}
-                alt={product?.name}
+                alt={product?.name || "Mahsulot rasmi"}
+                width={500}
+                height={384}
                 className="w-full h-96 object-cover rounded-lg shadow-lg"
               />
             )}
@@ -171,31 +178,6 @@ const Page = () => {
               <strong>Short Description:</strong> {product?.desc}
             </p>
           )}
-
-          <div className="flex items-center space-x-3">
-            {loading ? (
-              <div className="flex space-x-2">
-                {[...Array(4)].map((_, index) => (
-                  <div
-                    key={index}
-                    className="w-12 h-8 bg-gray-300 animate-pulse rounded-lg"
-                  ></div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <span className="text-lg font-semibold">Size:</span>
-                {["S", "M", "L", "XL"].map((size) => (
-                  <button
-                    key={size}
-                    className="px-4 py-2 border rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-500"
-                  >
-                    {size}
-                  </button>
-                ))}
-              </>
-            )}
-          </div>
 
           <div className="flex items-center space-x-4 mt-4">
             {loading ? (
@@ -226,14 +208,9 @@ const Page = () => {
             {loading ? (
               <Skeleton width={250} height={20} />
             ) : (
-              <div>
-                <p className="text-gray-500 text-sm">
-                  <strong>SKU:</strong> +998 999 99 99
-                </p>
-                <p className="text-gray-500 text-sm">
-                  <strong>Categories: </strong> {category?.name}
-                </p>
-              </div>
+              <p className="text-gray-500 text-sm">
+                <strong>Categories: </strong> {category?.name}
+              </p>
             )}
           </div>
         </div>
