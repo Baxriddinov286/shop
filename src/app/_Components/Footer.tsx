@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Mail,
   MapPin,
@@ -11,7 +12,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="mt-10 w-[1500] mx-auto bg-gray-100 text-gray-800 rounded-2xl">
+    <footer className="mt-10 w-[1500px] mx-auto bg-gray-100 text-gray-800 rounded-2xl">
       <div className="mx-auto px-6 py-12">
         <div className="grid md:grid-cols-4 gap-6 text-center md:text-left">
           <div>
@@ -29,7 +30,7 @@ export default function Footer() {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold text-lg">Watering Graden</h3>
+            <h3 className="font-semibold text-lg">Watering Garden</h3>
             <p className="text-sm">
               We are an online plant shop offering a wide range of cheap and
               trendy plants.
@@ -54,7 +55,7 @@ export default function Footer() {
 
         <div className="bg-green-100 p-4 mt-6 rounded-lg flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Greenshop" className="w-10 h-10" />
+            <Image src="/logo.png" alt="Greenshop" width={40} height={40} />
             <span className="text-lg font-bold text-green-600">GREENSHOP</span>
           </div>
           <div className="flex items-center space-x-2">
@@ -113,10 +114,15 @@ export default function Footer() {
             </div>
             <h4 className="font-semibold mt-4">We accept</h4>
             <div className="flex space-x-3 mt-2">
-              <img src="/paypal.png" alt="PayPal" className="w-12" />
-              <img src="/mastercard.png" alt="MasterCard" className="w-12" />
-              <img src="/visa.png" alt="Visa" className="w-12" />
-              <img src="/amex.png" alt="Amex" className="w-12" />
+              <Image src="/paypal.png" alt="PayPal" width={48} height={30} />
+              <Image
+                src="/mastercard.png"
+                alt="MasterCard"
+                width={48}
+                height={30}
+              />
+              <Image src="/visa.png" alt="Visa" width={48} height={30} />
+              <Image src="/amex.png" alt="Amex" width={48} height={30} />
             </div>
           </div>
         </div>

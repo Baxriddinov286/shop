@@ -24,7 +24,7 @@ export default function Order() {
       toast.error("Xatolik yuz berdi");
       console.error("Xatolik:", error);
     } else {
-      setOrders(data); // Mahsulotlarni yangilash
+      setOrders(data);
     }
   }, [supabase]);
 

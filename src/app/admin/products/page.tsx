@@ -1,6 +1,7 @@
 "use client";
 import Saidbar from "@/app/_Components/Saidbar";
 import { createClient } from "@/supabase/client";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import Skeleton from "react-loading-skeleton";
@@ -262,7 +263,7 @@ export default function Products() {
                       <td>{index + 1}</td>
                       <td className="flex items-center gap-2">
                         {product.images.map((img) => (
-                          <img
+                          <Image
                             key={img}
                             src={
                               "https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/" +
@@ -367,7 +368,7 @@ export default function Products() {
             </div>
             <div className="grid grid-cols-3 gap-1">
               {images.map((img) => (
-                <img
+                <Image
                   key={img}
                   src={
                     "https://dijgblooocqejrsjbsto.supabase.co/storage/v1/object/public/" +

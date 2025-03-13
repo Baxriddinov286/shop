@@ -19,8 +19,6 @@ function Home() {
   );
 }
 
-// Ad to card sotib olishdan oldin
-// by now sotib olish
-// like doimgiday like
+
 
 export default Home;
