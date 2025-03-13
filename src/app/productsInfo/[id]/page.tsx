@@ -1,13 +1,13 @@
 "use client";
 import Navbar from "@/app/_Components/navbar";
 import { createClient } from "@/supabase/client";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { FaHeart } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 interface ProductType {
   id: number;
@@ -27,7 +27,8 @@ interface CategoryType {
 
 const Page = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
-  const { id } = useParams();
+  const router = useRouter();
+  const { id } = router.query;
   const supabase = createClient();
   const [imgIndex, setImgIndex] = useState(0);
   const [product, setProduct] = useState<ProductType | null>(null);

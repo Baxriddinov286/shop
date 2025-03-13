@@ -15,7 +15,7 @@ interface UsersType {
   role: string;
 }
 
-export default function page() {
+export default function Page() {
   const [users, setUsers] = useState<UsersType[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
